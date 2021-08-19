@@ -1,0 +1,146 @@
+import random
+import turtle
+
+turtle.setup(800, 800)
+turtle2 = turtle.Turtle()
+turtle3 = turtle.Turtle()
+win = turtle.Screen()
+    
+def barrier_setup():
+    turtle.hideturtle
+    turtle.penup()
+    turtle.goto(-250, 175)
+    turtle.pendown()
+    turtle.forward(500)
+    
+def word_setup(g_word):
+    turtle2.clear()
+    turtle2.hideturtle()
+    turtle2.penup()
+    turtle2.goto(0, 190)
+    turtle2.write(" ".join(g_word), align = "center", font = ("Arial", 16, "normal"))
+    
+    
+def draw_pole():
+    turtle3.hideturtle()
+    turtle3.penup()
+    turtle3.goto(140, -200)
+    turtle3.pendown()
+    turtle3.forward(150)
+    turtle3.left(90)
+    turtle3.forward(300)
+    turtle3.left(90)
+    turtle3.forward(100)
+    turtle3.left(90)
+    turtle3.forward(30)
+    turtle3.penup()
+    turtle3.right(90)
+    turtle3.forward(30)
+    #print(turtle3.pos())
+    
+def draw_hangman(ig):
+    #draw head
+    if ig == 1:
+        turtle3.left(90)
+        turtle3.forward(30)
+        turtle3.pendown()
+        turtle3.circle(30)
+        turtle3.penup()
+        turtle3.goto(190, 10)
+    
+    #draw body
+    if ig == 2:
+        turtle3.pendown()
+        turtle3.forward(150)
+    
+    #draw right arm
+    if ig == 3:
+        turtle3.penup()
+        turtle3.goto(190, -50)
+        turtle3.seth(45)
+        turtle3.pendown()
+        turtle3.forward(50)
+    
+    #draw left arm
+    if ig == 4:
+        turtle3.penup()
+        turtle3.goto(190, -50)
+        turtle3.seth(135)
+        turtle3.pendown()
+        turtle3.forward(50)
+    
+    #draw right leg
+    if ig == 5:
+        turtle3.penup()
+        turtle3.goto(190, -140)
+        turtle3.seth(240)
+        turtle3.pendown()
+        turtle3.forward(70)
+    
+    #draw left leg
+    if ig == 6:
+        turtle3.penup()
+        turtle3.goto(190, -140)
+        turtle3.seth(300)
+        turtle3.pendown()
+        turtle3.forward(70)
+
+
+#draw_hangman()
+
+file = open("word_list.txt", "r")
+
+word_list = []
+for line in file: 
+    line = line.rstrip('\n') #get rid of end of line market
+    word_list.append(line)
+    
+actual_word = random.choice(word_list)
+n = len(actual_word)
+guess_word = ["_"] * n
+# print(actual_word)
+# print(guess_word)
+
+barrier_setup()
+word_setup(guess_word)
+draw_pole()
+
+
+guess_count = 0
+tracker = []
+while(guess_count < 6):
+    guess = win.textinput("Letter Guess", "Please enter your letter: ")
+    while(not guess.isalpha() or len(guess) != 1):
+        guess = win.textinput("Letter Guess", "Please make sure you enter a single alphabetical letter: ")
+    
+    while guess in tracker:
+        guess = win.textinput("Letter Guess", "You've already guessed this letter, try again: ")
+
+    
+    tracker.append(guess)
+    found = False
+    for i in range(len(actual_word)):
+        if guess == actual_word[i]:
+            guess_word[i] = guess
+            found = True
+            
+    if not found:
+            guess_count += 1
+            draw_hangman(guess_count)
+            
+    word_setup(guess_word)
+    
+    if "_" not in guess_word:
+        turtle3.clear()
+        #https://www.quiltedtwins.com/new-blog/2018/july/template-znn53-8snfp-n6lpm-lp282-sywlk-wj2js-hsja4-d2we4-pja2s-352nd-h949z-ft9s2-jp4w6-n2s94-s5p5j-trebl-7hpt2-dbb4d-7fsen-gnssj-wnrfc-c2kjk-gwdb9-czfz7
+        win.register_shape("winner.gif")
+        turtle3 = turtle.Turtle("winner.gif")
+        break
+    
+if guess_count == 6:
+    turtle3.clear()
+    #https://teacherinastrangeland.blog/2019/02/20/im-a-loser-baby-so-why-dont-you-kill-me/
+    win.register_shape("loser.gif")
+    turtle3 = turtle.Turtle("loser.gif")
+
+
